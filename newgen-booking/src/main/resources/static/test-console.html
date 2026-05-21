@@ -1,0 +1,25 @@
+k# Create the test file
+cat > src/main/resources/static/test-console.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Console</title>
+</head>
+<body>
+    <h1>Session Storage Check</h1>
+    <button onclick="showUser()">Show Logged In User</button>
+    <pre id="result"></pre>
+    
+    <script>
+        function showUser() {
+            const user = sessionStorage.getItem('loggedInUser');
+            if (user) {
+                document.getElementById('result').innerHTML = 'User: ' + user;
+            } else {
+                document.getElementById('result').innerHTML = 'No user logged in. Please go to login page first.';
+            }
+        }
+    </script>
+</body>
+</html>
+EOF

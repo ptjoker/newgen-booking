@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - NewGen Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: #2c7da0; color: white; padding: 15px; }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; cursor: pointer; }
+        .container { padding: 20px; }
+        .category-btn { margin: 10px; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; color: white; cursor: pointer; }
+        .doctor { background: #1e88e5; }
+        .hotel { background: #ff9800; }
+        .trip { background: #4caf50; }
+        .event { background: #9c27b0; }
+        .provider-card { background: white; border-radius: 15px; padding: 15px; margin: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .provider-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .booking-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 0; border-left: 4px solid #2c7da0; }
+        .status-pending { color: #ff9800; font-weight: bold; }
+        .status-confirmed { color: #4caf50; font-weight: bold; }
+        .status-cancelled { color: #f44336; font-weight: bold; }
+        .status-paid { color: #2196f3; font-weight: bold; }
+        .btn-book { background: #2c7da0; color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; }
+        .btn-book:hover { background: #0b4f6c; }
+        .btn-pay { background: #28a745; color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 10px; }
+        .btn-pay:hover { background: #1e7e34; }
+        .back-link { cursor: pointer; color: #2c7da0; margin-bottom: 20px; display: inline-block; }
+        .empty-state { text-align: center; padding: 50px; color: #999; }
+        .payment-summary { background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        .payment-methods { display: flex; gap: 15px; margin: 15px 0; }
+        .payment-method { border: 2px solid #ddd; border-radius: 10px; padding: 10px 20px; cursor: pointer; text-align: center; flex: 1; }
+        .payment-method.selected { border-color: #28a745; background: #e8f5e9; }
+        .payment-method i { font-size: 24px; display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="container">
+            <span style="font-size: 24px; font-weight: bold;">NewGen Booking</span>
+            <div style="float: right;">
+                <a onclick="showHome()">🏠 Home</a>
+                <a onclick="showBookings()">📋 My Bookings</a>
+                <a onclick="showProfile()">👤 Profile</a>
+                <a onclick="logout()">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- HOME SECTION -->
+        <div id="homeSection">
+            <h2>What would you like to book today? 🎉</h2>
+            <div style="margin: 30px 0;">
+                <button class="category-btn doctor" onclick="loadCategory('DOCTOR')">👨‍⚕️ Doctor Appointment</button>
+                <button class="category-btn hotel" onclick="loadCategory('HOTEL')">🏨 Book Hotel</button>
+                <button class="category-btn trip" onclick="loadCategory('TRIP')">✈️ Book Trip</button>
+                <button class="category-btn event" onclick="loadCategory('EVENT_ORGANIZER')">🎫 Buy Tickets</button>
+            </div>
+            <div id="categoryHeader"></div>
+            <div id="providersGrid" class="row"></div>
+        </div>
+
+        <!-- BOOKINGS SECTION -->
+        <div id="bookingsSection" style="display:none;">
+            <h2>📋 My Booking History</h2>
+            <div id="bookingsList"></div>
+        </div>
+
+        <!-- PROFILE SECTION -->
+        <div id="profileSection" style="display:none;">
+            <h2>👤 My Profile</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div style="background: white; padding: 20px; border-radius: 15px; text-align: center;">
+                        <img id="profileImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+                        <h4 id="profileName"></h4>
+                        <p id="profileEmail"></p>
+                        <p id="profilePhone"></p>
+                        <button class="btn btn-primary" onclick="editProfile()">Edit Profile</button>
+                        <button class="btn btn-secondary" onclick="changePassword()">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING MODAL -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Book Service</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">💳 Complete Payment</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="paymentBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h5>Edit Profile</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <input type="text" id="editFirstName" class="form-control mb-2" placeholder="First Name">
+                    <input type="text" id="editLastName" class="form-control mb-2" placeholder="Last Name">
+                    <input type="text" id="editPhone" class="form-control mb-2" placeholder="Phone">
+                    <input type="text" id="editProfilePic" class="form-control" placeholder="Profile Picture URL">
+                </div>
+                <div class="modal-footer"><button class="btn btn-primary" onclick="saveProfile()">Save</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+        let loggedInUser = null;
+        let allProviders = [];
+        let selectedProvider = null;
+        let tempBookingData = null;
+
+        const images = {
+            'DOCTOR': 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop',
+            'HOTEL': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=200&fit=crop',
+            'TRIP': 'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=400&h=200&fit=crop',
+            'EVENT_ORGANIZER': 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400&h=200&fit=crop'
+        };
+
+        function getUserId() {
+            const userData = sessionStorage.getItem('loggedInUser');
+            if (!userData) return null;
+            try {
+                const user = JSON.parse(userData);
+                return user.user_id || user.userId || user.id || user.ID;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function getUser() {
+            const userData = sessionStorage.getItem('loggedInUser');
+            if (!userData) return null;
+            try {
+                return JSON.parse(userData);
+            } catch(e) {
+                return null;
+            }
+        }
+
+        async function init() {
+            const user = getUser();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            loggedInUser = user;
+            
+            document.getElementById('profileName').innerText = `${loggedInUser.firstName || loggedInUser.first_name || ''} ${loggedInUser.lastName || loggedInUser.last_name || ''}`;
+            document.getElementById('profileEmail').innerText = loggedInUser.email;
+            document.getElementById('profilePhone').innerText = loggedInUser.phone || 'Not provided';
+            document.getElementById('profileImg').src = loggedInUser.profilePicture || 'https://via.placeholder.com/100';
+            
+            await loadProviders();
+            await loadMyBookings();
+            loadCategory('DOCTOR');
+        }
+
+        async function loadProviders() {
+            try {
+                const res = await fetch(`${API_URL}/providers/verified`);
+                allProviders = await res.json();
+            } catch(e) {
+                console.error('Error loading providers:', e);
+            }
+        }
+
+        function loadCategory(serviceType) {
+            const filtered = allProviders.filter(p => p.serviceType === serviceType);
+            
+            const titles = {
+                'DOCTOR': '👨‍⚕️ Available Doctors',
+                'HOTEL': '🏨 Available Hotels',
+                'TRIP': '✈️ Available Trips',
+                'EVENT_ORGANIZER': '🎫 Available Events'
+            };
+            
+            document.getElementById('categoryHeader').innerHTML = `
+                <h3>${titles[serviceType]}</h3>
+                <a class="back-link" onclick="showHome()">← Back to Categories</a>
+            `;
+            
+            displayProviders(filtered);
+        }
+
+        function displayProviders(providers) {
+            const grid = document.getElementById('providersGrid');
+            if (!providers || providers.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No providers found in this category</div>';
+                return;
+            }
+            
+            grid.innerHTML = providers.map(p => `
+                <div class="col-md-3">
+                    <div class="provider-card" onclick="openBookingModal(${p.providerId}, '${p.businessName}', '${p.serviceType}')">
+                        <img src="${images[p.serviceType]}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 10px;">
+                        <h5 class="mt-2">${p.businessName}</h5>
+                        <p><i class="fas fa-map-marker-alt"></i> ${p.city || 'Available'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openBookingModal(providerId, name, serviceType) {
+            let price = 500;
+            if (serviceType === 'HOTEL') price = 1200;
+            if (serviceType === 'TRIP') price = 2500;
+            if (serviceType === 'EVENT_ORGANIZER') price = 350;
+            
+            selectedProvider = { providerId, name, serviceType, price };
+            const today = new Date().toISOString().split('T')[0];
+            
+            document.getElementById('modalTitle').innerHTML = `Book ${serviceType}`;
+            document.getElementById('modalBody').innerHTML = `
+                <img src="${images[serviceType]}" class="img-fluid rounded mb-3">
+                <h5>${name}</h5>
+                <p><strong>Price: R${price}</strong></p>
+                <div class="mb-3">
+                    <label>Booking Date</label>
+                    <input type="date" id="bookingDate" class="form-control" value="${today}">
+                </div>
+                <div class="mb-3">
+                    <label>Number of People</label>
+                    <input type="number" id="guests" class="form-control" value="1" min="1">
+                </div>
+                <div class="mb-3">
+                    <label>Special Requests</label>
+                    <textarea id="requests" class="form-control" rows="2"></textarea>
+                </div>
+                <button class="btn-book" onclick="goToPayment()">Proceed to Payment</button>
+            `;
+            new bootstrap.Modal(document.getElementById('bookingModal')).show();
+        }
+
+        function goToPayment() {
+            const bookingDate = document.getElementById('bookingDate').value;
+            const guests = parseInt(document.getElementById('guests').value) || 1;
+            const requests = document.getElementById('requests').value || '';
+            
+            tempBookingData = {
+                provider: selectedProvider,
+                bookingDate: bookingDate,
+                numberOfGuests: guests,
+                specialRequests: requests,
+                totalAmount: selectedProvider.price * guests
+            };
+            
+            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+            
+            document.getElementById('paymentBody').innerHTML = `
+                <div class="payment-summary">
+                    <h5>Booking Summary</h5>
+                    <p><strong>Service:</strong> ${selectedProvider.name}</p>
+                    <p><strong>Type:</strong> ${selectedProvider.serviceType}</p>
+                    <p><strong>Date:</strong> ${bookingDate}</p>
+                    <p><strong>People:</strong> ${guests}</p>
+                    <hr>
+                    <h4>Total Amount: R${tempBookingData.totalAmount}</h4>
+                </div>
+                
+                <div class="payment-methods">
+                    <div class="payment-method" onclick="selectPaymentMethod('card')" id="method-card">
+                        <i class="fab fa-cc-visa"></i>
+                        Credit/Debit Card
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod('paypal')" id="method-paypal">
+                        <i class="fab fa-paypal"></i>
+                        PayPal
+                    </div>
+                    <div class="payment-method" onclick="selectPaymentMethod('cash')" id="method-cash">
+                        <i class="fas fa-money-bill"></i>
+                        Cash
+                    </div>
+                </div>
+                
+                <div id="cardDetails" style="display:none; margin-top: 15px;">
+                    <div class="mb-2"><input type="text" class="form-control" placeholder="Card Number" id="cardNumber"></div>
+                    <div class="row">
+                        <div class="col-6"><input type="text" class="form-control" placeholder="MM/YY" id="cardExpiry"></div>
+                        <div class="col-6"><input type="text" class="form-control" placeholder="CVV" id="cardCvv"></div>
+                    </div>
+                </div>
+                
+                <div id="paypalDetails" style="display:none; margin-top: 15px;">
+                    <div class="mb-2"><input type="email" class="form-control" placeholder="PayPal Email" id="paypalEmail"></div>
+                </div>
+                
+                <button class="btn-pay mt-3" onclick="processPayment()">Pay R${tempBookingData.totalAmount}</button>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('paymentModal')).show();
+        }
+
+        let selectedPaymentMethod = 'card';
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`method-${method}`).classList.add('selected');
+            
+            document.getElementById('cardDetails').style.display = method === 'card' ? 'block' : 'none';
+            document.getElementById('paypalDetails').style.display = method === 'paypal' ? 'block' : 'none';
+        }
+
+        async function processPayment() {
+            const userId = getUserId();
+            if (!userId) {
+                alert('Please login again');
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            let bookingType = 'APPOINTMENT';
+            if (tempBookingData.provider.serviceType === 'HOTEL') bookingType = 'HOTEL';
+            if (tempBookingData.provider.serviceType === 'TRIP') bookingType = 'TRIP';
+            if (tempBookingData.provider.serviceType === 'EVENT_ORGANIZER') bookingType = 'EVENT_TICKET';
+            
+            const bookingData = {
+                user: { userId: userId },
+                provider: { providerId: tempBookingData.provider.providerId },
+                bookingType: bookingType,
+                bookingDate: tempBookingData.bookingDate,
+                numberOfGuests: tempBookingData.numberOfGuests,
+                totalAmount: tempBookingData.totalAmount,
+                status: 'CONFIRMED',
+                specialRequests: tempBookingData.specialRequests
+            };
+            
+            // Simulate payment processing
+            const paymentBtn = document.querySelector('.btn-pay');
+            paymentBtn.disabled = true;
+            paymentBtn.textContent = 'Processing Payment...';
+            
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/bookings`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(bookingData)
+                    });
+                    
+                    if (response.ok) {
+                        alert('✅ Payment successful! Booking confirmed.');
+                        bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+                        await loadMyBookings();
+                        showBookings();
+                    } else {
+                        const error = await response.text();
+                        alert('❌ Payment failed: ' + error);
+                    }
+                } catch(error) {
+                    alert('❌ Error: ' + error.message);
+                } finally {
+                    paymentBtn.disabled = false;
+                    paymentBtn.textContent = `Pay R${tempBookingData.totalAmount}`;
+                }
+            }, 1500);
+        }
+
+        async function loadMyBookings() {
+            const userId = getUserId();
+            if (!userId) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/bookings/user/${userId}`);
+                const bookings = await response.json();
+                const div = document.getElementById('bookingsList');
+                
+                if (!bookings || bookings.length === 0) {
+                    div.innerHTML = '<div class="empty-state">No bookings yet. Start booking above!</div>';
+                    return;
+                }
+                
+                div.innerHTML = bookings.map(b => `
+                    <div class="booking-card">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>${b.provider?.businessName || 'Service'}</strong><br>
+                                <small>📅 ${b.bookingDate}</small>
+                            </div>
+                            <div class="col-md-3">${b.bookingType || 'Service'}</div>
+                            <div class="col-md-2">R${b.totalAmount || '0'}</div>
+                            <div class="col-md-3">
+                                <span class="status-${b.status?.toLowerCase()}">${b.status || 'PENDING'}</span>
+                                ${b.status === 'PENDING' ? `<button class="btn btn-sm btn-danger ms-2" onclick="cancelBooking(${b.bookingId})">Cancel</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) {
+                console.error('Error loading bookings:', e);
+            }
+        }
+
+        async function cancelBooking(id) {
+            if (!confirm('Cancel this booking?')) return;
+            try {
+                await fetch(`${API_URL}/bookings/${id}/cancel?reason=Cancelled by customer`, { method: 'PATCH' });
+                await loadMyBookings();
+                alert('Booking cancelled');
+            } catch(e) {
+                alert('Error cancelling');
+            }
+        }
+
+        function showHome() {
+            document.getElementById('homeSection').style.display = 'block';
+            document.getElementById('bookingsSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            loadCategory('DOCTOR');
+        }
+
+        function showBookings() {
+            document.getElementById('homeSection').style.display = 'none';
+            document.getElementById('bookingsSection').style.display = 'block';
+            document.getElementById('profileSection').style.display = 'none';
+            loadMyBookings();
+        }
+
+        function showProfile() {
+            document.getElementById('homeSection').style.display = 'none';
+            document.getElementById('bookingsSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'block';
+        }
+
+        function editProfile() {
+            document.getElementById('editFirstName').value = loggedInUser.firstName || '';
+            document.getElementById('editLastName').value = loggedInUser.lastName || '';
+            document.getElementById('editPhone').value = loggedInUser.phone || '';
+            document.getElementById('editProfilePic').value = loggedInUser.profilePicture || '';
+            new bootstrap.Modal(document.getElementById('editProfileModal')).show();
+        }
+
+        async function saveProfile() {
+            const userId = getUserId();
+            const res = await fetch(`${API_URL}/users/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...loggedInUser,
+                    firstName: document.getElementById('editFirstName').value,
+                    lastName: document.getElementById('editLastName').value,
+                    phone: document.getElementById('editPhone').value,
+                    profilePicture: document.getElementById('editProfilePic').value
+                })
+            });
+            if (res.ok) {
+                alert('Profile updated! Please login again.');
+                sessionStorage.clear();
+                window.location.href = '/login.html';
+            }
+        }
+
+        function changePassword() {
+            const userId = getUserId();
+            const newPwd = prompt('Enter new password:');
+            if (newPwd && newPwd.length >= 4) {
+                fetch(`${API_URL}/users/${userId}/password`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: newPwd })
+                }).then(() => {
+                    alert('Password updated! Please login again.');
+                    sessionStorage.clear();
+                    window.location.href = '/login.html';
+                });
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

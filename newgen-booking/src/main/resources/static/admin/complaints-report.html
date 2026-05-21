@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complaints Report - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #2c7da0;
+        }
+        .logo h1 { margin: 0; color: #0b4f6c; font-size: 24px; }
+        .logo span { color: #2c7da0; }
+        .home-btn { background: #0b4f6c; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; border-radius: 12px; padding: 20px; text-align: center; border-left: 4px solid #2c7da0; }
+        .stat-number { font-size: 36px; font-weight: bold; color: #0b4f6c; }
+        .stat-label { color: #666; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+        th { background: #0b4f6c; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        .badge-pending { background: #ff9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .badge-resolved { background: #4caf50; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .badge-in-review { background: #2196f3; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .badge-closed { background: #666; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .respond-btn { background: #2c7da0; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; width: 500px; border-radius: 20px; }
+        .close { float: right; font-size: 28px; cursor: pointer; }
+        textarea { width: 100%; padding: 10px; border: 2px solid #2c7da0; border-radius: 8px; margin: 10px 0; }
+        .filter-section { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-section select, .filter-section input { padding: 10px; border: 2px solid #2c7da0; border-radius: 8px; }
+        .footer { margin-top: 30px; text-align: center; padding: 20px; background: white; border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo"><h1>NewGen<span>Booking</span></h1></div>
+            <a href="/index.html" class="home-btn">Back to Dashboard</a>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-number" id="pendingCount">-</div><div class="stat-label">Pending</div></div>
+            <div class="stat-card"><div class="stat-number" id="inReviewCount">-</div><div class="stat-label">In Review</div></div>
+            <div class="stat-card"><div class="stat-number" id="resolvedCount">-</div><div class="stat-label">Resolved</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalCount">-</div><div class="stat-label">Total Complaints</div></div>
+        </div>
+
+        <div class="filter-section">
+            <input type="text" id="searchInput" placeholder="Search by title or user..." style="flex:1;">
+            <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="IN_REVIEW">In Review</option>
+                <option value="RESOLVED">Resolved</option>
+                <option value="CLOSED">Closed</option>
+            </select>
+            <select id="typeFilter">
+                <option value="">All Types</option>
+                <option value="SERVICE_ISSUE">Service Issue</option>
+                <option value="BILLING_ISSUE">Billing Issue</option>
+                <option value="TECHNICAL_ISSUE">Technical Issue</option>
+                <option value="PROVIDER_COMPLAINT">Provider Complaint</option>
+                <option value="BOOKING_ISSUE">Booking Issue</option>
+                <option value="CANCELLATION_ISSUE">Cancellation Issue</option>
+                <option value="REFUND_ISSUE">Refund Issue</option>
+                <option value="OTHER">Other</option>
+            </select>
+            <button onclick="filterComplaints()" style="background:#2c7da0; color:white; border:none; padding:10px 20px; border-radius:8px;">Filter</button>
+            <button onclick="loadComplaints()" style="background:#666; color:white; border:none; padding:10px 20px; border-radius:8px;">Reset</button>
+        </div>
+
+        <table id="complaintsTable">
+            <thead><tr><th>ID</th><th>User</th><th>Title</th><th>Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="complaintsTableBody"><tr><td colspan="7" style="text-align:center;">Loading complaints...</td></tr></tbody>
+        </table>
+        <div class="footer"><p>Customer Complaints & Feedback Report</p></div>
+    </div>
+
+    <!-- Respond Modal -->
+    <div id="respondModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Respond to Complaint</h3>
+            <p><strong>Complaint:</strong> <span id="modalTitle"></span></p>
+            <p><strong>Customer:</strong> <span id="modalUser"></span></p>
+            <p><strong>Description:</strong> <span id="modalDesc"></span></p>
+            <label>Admin Response:</label>
+            <textarea id="adminResponse" rows="4" placeholder="Type your response here..."></textarea>
+            <label>Update Status:</label>
+            <select id="modalStatus">
+                <option value="PENDING">Pending</option>
+                <option value="IN_REVIEW">In Review</option>
+                <option value="RESOLVED">Resolved</option>
+                <option value="CLOSED">Closed</option>
+            </select>
+            <button onclick="submitResponse()" style="margin-top:15px; background:#2c7da0; color:white; border:none; padding:10px 20px; border-radius:8px;">Submit Response</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/complaints';
+        let currentComplaintId = null;
+        let allComplaints = [];
+
+        async function loadComplaints() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    allComplaints = await response.json();
+                    displayComplaints(allComplaints);
+                    loadStats();
+                }
+            } catch (error) {
+                document.getElementById('complaintsTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Error loading complaints</td></tr>';
+            }
+        }
+
+        function displayComplaints(complaints) {
+            const tbody = document.getElementById('complaintsTableBody');
+            if (!complaints || complaints.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No complaints found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            complaints.forEach(c => {
+                const row = tbody.insertRow();
+                const statusClass = `badge-${c.status.toLowerCase()}`;
+                row.innerHTML = `
+                    <td>${c.complaintId}</td>
+                    <td>${c.user?.username || '-'}</td>
+                    <td>${c.title || '-'}</td>
+                    <td>${c.type || '-'}</td>
+                    <td><span class="${statusClass}">${c.status || 'PENDING'}</span></td>
+                    <td>${new Date(c.createdAt).toLocaleString()}</td>
+                    <td><button class="respond-btn" onclick="openRespondModal(${c.complaintId})">Respond</button></td>
+                `;
+            });
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('pendingCount').textContent = stats.pending || 0;
+                    document.getElementById('inReviewCount').textContent = stats.inReview || 0;
+                    document.getElementById('resolvedCount').textContent = stats.resolved || 0;
+                    document.getElementById('totalCount').textContent = allComplaints.length;
+                }
+            } catch (error) { console.error('Error loading stats:', error); }
+        }
+
+        function filterComplaints() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            let filtered = allComplaints;
+            if (searchTerm) {
+                filtered = filtered.filter(c => 
+                    c.title?.toLowerCase().includes(searchTerm) || 
+                    c.user?.username?.toLowerCase().includes(searchTerm)
+                );
+            }
+            if (status) filtered = filtered.filter(c => c.status === status);
+            if (type) filtered = filtered.filter(c => c.type === type);
+            displayComplaints(filtered);
+        }
+
+        async function openRespondModal(id) {
+            const response = await fetch(`${API_URL}/${id}`);
+            const complaint = await response.json();
+            currentComplaintId = id;
+            document.getElementById('modalTitle').textContent = complaint.title;
+            document.getElementById('modalUser').textContent = complaint.user?.username || 'Unknown';
+            document.getElementById('modalDesc').textContent = complaint.description;
+            document.getElementById('adminResponse').value = complaint.adminResponse || '';
+            document.getElementById('modalStatus').value = complaint.status || 'PENDING';
+            document.getElementById('respondModal').style.display = 'block';
+        }
+
+        async function submitResponse() {
+            const adminResponse = document.getElementById('adminResponse').value;
+            const status = document.getElementById('modalStatus').value;
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) { window.location.href = '/login.html'; return; }
+            const admin = JSON.parse(loggedInUser);
+            try {
+                const response = await fetch(`${API_URL}/${currentComplaintId}/respond?adminResponse=${encodeURIComponent(adminResponse)}&adminId=${admin.id}&status=${status}`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    alert('Response submitted successfully!');
+                    closeModal();
+                    loadComplaints();
+                } else { alert('Error submitting response'); }
+            } catch (error) { alert('Error: ' + error.message); }
+        }
+
+        function closeModal() { document.getElementById('respondModal').style.display = 'none'; }
+        
+        loadComplaints();
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+                    body: JSON.stringify(newAdmin)
+                });
+                
+                if (createResponse.ok) {
+                    showSuccess('Admin account created successfully!');
+                    document.getElementById('addAdminForm').reset();
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard.html';
+                    }, 2000);
+                } else {
+                    const error = await createResponse.text();
+                    showError('Error: ' + error);
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        });
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

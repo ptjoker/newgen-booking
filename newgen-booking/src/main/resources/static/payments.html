@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Management - NewGen Booking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #0b4f6c;
+            font-size: 24px;
+        }
+        
+        .logo span {
+            color: #2c7da0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .home-btn {
+            background: #0b4f6c;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0b4f6c;
+        }
+        
+        .home-btn:hover {
+            background: #2c7da0;
+            border-color: #2c7da0;
+        }
+        
+        h1, h2, h3 {
+            color: #0b4f6c;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input,
+        .search-box select {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+        
+        .search-box input:focus,
+        .search-box select:focus {
+            outline: none;
+            border-color: #0b4f6c;
+            box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+        }
+        
+        .search-btn {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 30px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #0b4f6c;
+            border-color: #0b4f6c;
+        }
+        
+        .reset-btn {
+            background: white;
+            color: #0b4f6c;
+            padding: 12px 30px;
+            border: 2px solid #0b4f6c;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background: #e6f3ff;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            color: #0b4f6c;
+            padding: 8px 20px;
+            border: 2px solid #2c7da0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2c7da0;
+            color: white;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row input,
+        .form-row select {
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #0b4f6c;
+            box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+        }
+        
+        button {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 25px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0b4f6c;
+            border-color: #0b4f6c;
+        }
+        
+        .complete-btn {
+            background: white;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+        }
+        
+        .complete-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .refund-btn {
+            background: white;
+            color: #b85c00;
+            border: 2px solid #b85c00;
+        }
+        
+        .refund-btn:hover {
+            background: #b85c00;
+            color: white;
+        }
+        
+        .fail-btn {
+            background: white;
+            color: #d32f2f;
+            border: 2px solid #d32f2f;
+        }
+        
+        .fail-btn:hover {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        th {
+            background: #0b4f6c;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e6f3ff;
+        }
+        
+        tr:hover {
+            background-color: #f0f9ff;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-COMPLETED {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+        
+        .badge-PENDING {
+            background: #fff3e0;
+            color: #b85c00;
+            border: 1px solid #b85c00;
+        }
+        
+        .badge-FAILED {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+        
+        .badge-REFUNDED {
+            background: #e3f2fd;
+            color: #0b4f6c;
+            border: 1px solid #0b4f6c;
+        }
+        
+        .badge-PARTIALLY_REFUNDED {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #7b1fa2;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #0b4f6c;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #2c7da0;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-box input,
+            .search-box select {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Home Button -->
+        <div class="header">
+            <div class="logo">
+                <h1>NewGen<span>Booking</span></h1>
+            </div>
+            <div class="nav-buttons">
+                <a href="/index.html" class="home-btn"> Home</a>
+            </div>
+        </div>
+
+        <h1>PAYMENT MANAGEMENT</h1>
+        <h3>Group Member: NCONGWANE KLH</h3>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2>Search Payments</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by transaction ID or booking ID...">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="FAILED">Failed</option>
+                    <option value="REFUNDED">Refunded</option>
+                    <option value="PARTIALLY_REFUNDED">Partially Refunded</option>
+                </select>
+                <select id="methodFilter">
+                    <option value="">All Methods</option>
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="DEBIT_CARD">Debit Card</option>
+                    <option value="CASH">Cash</option>
+                </select>
+                <button class="search-btn" onclick="searchPayments()">Search</button>
+                <button class="reset-btn" onclick="resetSearch()">Reset</button>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn" onclick="filterByUser()">Filter by User ID</button>
+                <button class="filter-btn" onclick="loadAll()">Show All</button>
+            </div>
+        </div>
+
+        <!-- Process Payment Form -->
+        <div class="form-container">
+            <h2>Process New Payment</h2>
+            <form id="addPaymentForm">
+                <div class="form-row">
+                    <input type="number" id="bookingId" placeholder="Booking ID" required>
+                    <input type="number" id="amount" placeholder="Amount (R)" step="0.01" required>
+                    <select id="paymentMethod" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="CREDIT_CARD">Credit Card</option>
+                        <option value="DEBIT_CARD">Debit Card</option>
+                        <option value="CASH">Cash</option>
+                    </select>
+                </div>
+                <button type="submit">Process Payment</button>
+            </form>
+        </div>
+
+        <!-- Payments Table -->
+        <h2>Payments List</h2>
+        <table id="paymentsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Booking ID</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Transaction ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="paymentsTableBody">
+                <!-- Data will be loaded here -->
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>NewGen Booking System - Payment Management Module</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/payments';
+        let allPayments = [];
+
+        // Load payments on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAll();
+        });
+
+        // Handle form submission
+        document.getElementById('addPaymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form values
+            const bookingId = document.getElementById('bookingId').value.trim();
+            const amount = document.getElementById('amount').value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            // Validate required fields
+            if (!bookingId || !amount || !paymentMethod) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Build payment object
+            const payment = {
+                booking: {bookingId: parseInt(bookingId)},
+                amount: parseFloat(amount),
+                paymentMethod: paymentMethod
+            };
+
+            console.log('Sending payment:', payment);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payment)
+                });
+
+                const responseText = await response.text();
+                console.log('Response status:', response.status);
+                console.log('Response text:', responseText);
+
+                if (response.ok) {
+                    alert('Payment processed successfully');
+                    loadAll();
+                    document.getElementById('addPaymentForm').reset();
+                } else {
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        alert('Error: ' + (errorData.message || responseText));
+                    } catch {
+                        alert('Error: ' + responseText);
+                    }
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert('Network error: ' + error.message);
+            }
+        });
+
+        // Load all payments
+        async function loadAll() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to load payments');
+                }
+                allPayments = await response.json();
+                displayPayments(allPayments);
+            } catch (error) {
+                console.error('Error loading payments:', error);
+                document.getElementById('paymentsTableBody').innerHTML =
+                    '<tr><td colspan="8" style="text-align: center; padding: 20px; color: red;">Error loading payments</td></tr>';
+            }
+        }
+
+        // Load payments by status
+        async function loadByStatus(status) {
+            try {
+                const response = await fetch(API_URL + '/status/' + status);
+                const payments = await response.json();
+                displayPayments(payments);
+            } catch (error) {
+                console.error('Error loading payments by status:', error);
+            }
+        }
+
+        // Display payments in table
+        function displayPayments(payments) {
+            const tbody = document.getElementById('paymentsTableBody');
+            tbody.innerHTML = '';
+
+            if (!payments || payments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No payments found</td></tr>';
+                return;
+            }
+
+            payments.forEach(payment => {
+                const row = tbody.insertRow();
+                const statusClass = `badge-${payment.status || 'PENDING'}`;
+                const paymentDate = payment.paymentDate ? new Date(payment.paymentDate).toLocaleString() : '-';
+
+                row.innerHTML = `
+                    <td>${payment.paymentId || ''}</td>
+                    <td>${payment.booking?.bookingId || '-'}</td>
+                    <td>R${payment.amount || 0}</td>
+                    <td>${payment.paymentMethod || '-'}</td>
+                    <td>${payment.transactionId || '-'}</td>
+                    <td>${paymentDate}</td>
+                    <td><span class="badge ${statusClass}">${payment.status || 'PENDING'}</span></td>
+                    <td>
+                        ${payment.status === 'PENDING' ? `<button class="complete-btn" onclick="completePayment(${payment.paymentId})">Complete</button>` : ''}
+                        ${payment.status === 'PENDING' ? `<button class="fail-btn" onclick="failPayment(${payment.paymentId})">Fail</button>` : ''}
+                        ${payment.status === 'COMPLETED' ? `<button class="refund-btn" onclick="refundPayment(${payment.paymentId})">Refund</button>` : ''}
+                    </td>
+                `;
+            });
+        }
+
+        // Search payments
+        function searchPayments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const method = document.getElementById('methodFilter').value;
+
+            let filtered = allPayments;
+
+            if (searchTerm) {
+                filtered = filtered.filter(p =>
+                    (p.transactionId && p.transactionId.toLowerCase().includes(searchTerm)) ||
+                    (p.booking?.bookingId && p.booking.bookingId.toString().includes(searchTerm))
+                );
+            }
+
+            if (status) {
+                filtered = filtered.filter(p => p.status === status);
+            }
+
+            if (method) {
+                filtered = filtered.filter(p => p.paymentMethod === method);
+            }
+
+            displayPayments(filtered);
+        }
+
+        // Reset search
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('methodFilter').value = '';
+            displayPayments(allPayments);
+        }
+
+        // Filter by user
+        async function filterByUser() {
+            const userId = prompt('Enter User ID:');
+            if (userId) {
+                try {
+                    const response = await fetch(API_URL + '/user/' + userId);
+                    const payments = await response.json();
+                    displayPayments(payments);
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+
+        // Complete payment
+        async function completePayment(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}/complete`, {method: 'PATCH'});
+                if (response.ok) {
+                    alert('Payment completed');
+                    loadAll();
+                } else {
+                    const error = await response.text();
+                    alert('Error: ' + error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Fail payment
+        async function failPayment(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}/fail`, {method: 'PATCH'});
+                if (response.ok) {
+                    alert('Payment failed');
+                    loadAll();
+                } else {
+                    const error = await response.text();
+                    alert('Error: ' + error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Refund payment
+        async function refundPayment(id) {
+            const refundAmount = prompt('Enter refund amount:');
+            const reason = prompt('Reason for refund:');
+            const adminId = prompt('Admin User ID:');
+
+            if (refundAmount && adminId) {
+                try {
+                    const response = await fetch(`${API_URL}/${id}/refund?refundAmount=${refundAmount}&reason=${encodeURIComponent(reason || '')}&adminUserId=${adminId}`, {
+                        method: 'POST'
+                    });
+                    if (response.ok) {
+                        alert('Refund processed');
+                        loadAll();
+                    } else {
+                        const error = await response.text();
+                        alert('Error: ' + error);
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

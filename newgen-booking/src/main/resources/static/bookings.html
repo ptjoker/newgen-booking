@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Management - NewGen Booking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-image {
+            width: 40px;
+            height: 40px;
+            background: #2c7da0;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #0b4f6c;
+            font-size: 24px;
+        }
+        
+        .logo span {
+            color: #2c7da0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .home-btn {
+            background: #0b4f6c;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0b4f6c;
+        }
+        
+        .home-btn:hover {
+            background: #2c7da0;
+            border-color: #2c7da0;
+        }
+        
+        h1, h2, h3 {
+            color: #0b4f6c;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input,
+        .search-box select {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+        
+        .search-box input:focus,
+        .search-box select:focus {
+            outline: none;
+            border-color: #0b4f6c;
+            box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+        }
+        
+        .search-btn {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 30px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #0b4f6c;
+            border-color: #0b4f6c;
+        }
+        
+        .reset-btn {
+            background: white;
+            color: #0b4f6c;
+            padding: 12px 30px;
+            border: 2px solid #0b4f6c;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background: #e6f3ff;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            color: #0b4f6c;
+            padding: 8px 20px;
+            border: 2px solid #2c7da0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2c7da0;
+            color: white;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .form-row input:focus,
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #0b4f6c;
+            box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+        }
+        
+        button {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 25px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0b4f6c;
+            border-color: #0b4f6c;
+        }
+        
+        .confirm-btn {
+            background: white;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+        }
+        
+        .confirm-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: white;
+            color: #d32f2f;
+            border: 2px solid #d32f2f;
+        }
+        
+        .cancel-btn:hover {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        .checkin-btn {
+            background: white;
+            color: #0b4f6c;
+            border: 2px solid #0b4f6c;
+        }
+        
+        .checkin-btn:hover {
+            background: #0b4f6c;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: white;
+            color: #d32f2f;
+            border: 2px solid #d32f2f;
+        }
+        
+        .delete-btn:hover {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        th {
+            background: #0b4f6c;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e6f3ff;
+        }
+        
+        tr:hover {
+            background-color: #f0f9ff;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-PENDING {
+            background: #fff3e0;
+            color: #b85c00;
+            border: 1px solid #b85c00;
+        }
+        
+        .badge-CONFIRMED {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+        
+        .badge-CANCELLED {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+        
+        .badge-COMPLETED {
+            background: #e3f2fd;
+            color: #0b4f6c;
+            border: 1px solid #0b4f6c;
+        }
+        
+        .badge-NO_SHOW {
+            background: #f5f5f5;
+            color: #616161;
+            border: 1px solid #616161;
+        }
+        
+        .badge-APPOINTMENT { background: #e3f2fd; color: #0b4f6c; border: 1px solid #0b4f6c; }
+        .badge-EVENT_TICKET { background: #f3e5f5; color: #7b1fa2; border: 1px solid #7b1fa2; }
+        .badge-HOTEL { background: #fff3e0; color: #b85c00; border: 1px solid #b85c00; }
+        .badge-TRIP { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #0b4f6c;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #2c7da0;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-box input,
+            .search-box select {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header with Home Button and Logo -->
+    <div class="header">
+        <div class="logo-container">
+            <div class="logo-image"></div>
+            <div class="logo">
+                <h1>NewGen<span>Booking</span></h1>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <a href="/index.html" class="home-btn">Home</a>
+        </div>
+    </div>
+
+    <h1>BOOKING MANAGEMENT</h1>
+    <h3>Group Member: XULU AT</h3>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <h2>Search Bookings</h2>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search by reference or ID...">
+            <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="CONFIRMED">Confirmed</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="NO_SHOW">No Show</option>
+            </select>
+            <select id="typeFilter">
+                <option value="">All Types</option>
+                <option value="APPOINTMENT">Appointment</option>
+                <option value="EVENT_TICKET">Event Ticket</option>
+                <option value="HOTEL">Hotel</option>
+                <option value="TRIP">Trip</option>
+            </select>
+            <button class="search-btn" onclick="searchBookings()">Search</button>
+            <button class="reset-btn" onclick="resetSearch()">Reset</button>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="filter-btn" onclick="filterByUser()">Filter by User ID</button>
+            <button class="filter-btn" onclick="filterByProvider()">Filter by Provider ID</button>
+            <button class="filter-btn" onclick="loadAll()">Show All</button>
+        </div>
+    </div>
+
+    <!-- Create Booking Form with DEFAULT VALUES -->
+    <div class="form-container">
+        <h2>Create New Booking</h2>
+        <form id="addBookingForm">
+            <div class="form-row">
+                <input type="number" id="userId" placeholder="User ID" required>
+                <input type="number" id="providerId" placeholder="Provider ID" required>
+                <select id="bookingType" required>
+                    <option value="">Select Booking Type</option>
+                    <option value="APPOINTMENT">Appointment</option>
+                    <option value="EVENT_TICKET">Event Ticket</option>
+                    <option value="HOTEL">Hotel</option>
+                    <option value="TRIP">Trip</option>
+                </select>
+                <!-- DEFAULT VALUE: Today's date -->
+                <input type="date" id="bookingDate" required>
+            </div>
+            <div class="form-row">
+                <input type="time" id="timeSlot" placeholder="Time (optional)">
+                <!-- DEFAULT VALUE: Number of guests default to 1 -->
+                <input type="number" id="numberOfGuests" value="1" min="1" placeholder="Number of Guests">
+                <input type="number" id="totalAmount" placeholder="Total Amount (R)" step="0.01" required>
+                <input type="number" id="eventId" placeholder="Event ID (for tickets)">
+            </div>
+            <div class="form-row">
+                <textarea id="specialRequests" placeholder="Special Requests (optional)" rows="2"></textarea>
+            </div>
+            <button type="submit">Create Booking</button>
+        </form>
+    </div>
+
+    <!-- Bookings Table -->
+    <h2>Bookings List</h2>
+    <table id="bookingsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Reference</th>
+            <th>User ID</th>
+            <th>Provider ID</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Guests</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="bookingsTableBody">
+        <!-- Data will be loaded here -->
+        </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>NewGen Booking System - Booking Management Module</p>
+    </div>
+</div>
+
+<script>
+    // Set default date to today (DEFAULT VALUE)
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookingDate').value = today;
+
+    const API_URL = 'http://localhost:8080/api/bookings';
+    let allBookings = [];
+
+    // Load bookings on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAll();
+    });
+
+    // ========== ERROR HANDLING FUNCTION (3 MARKS) ==========
+    // 1. Empty fields check (1 mark)
+    // 2. Numeric/date data validation (1 mark)
+    // 3. Field lengths/ranges validation (1 mark)
+    function validateBookingForm(bookingData) {
+        const errors = [];
+
+        // 1. CHECK EMPTY FIELDS (1 mark)
+        if (!bookingData.userId || bookingData.userId.trim() === '') {
+            errors.push('❌ User ID is required');
+        }
+        if (!bookingData.providerId || bookingData.providerId.trim() === '') {
+            errors.push('❌ Provider ID is required');
+        }
+        if (!bookingData.bookingType) {
+            errors.push('❌ Booking type is required');
+        }
+        if (!bookingData.bookingDate) {
+            errors.push('❌ Booking date is required');
+        }
+        if (!bookingData.totalAmount || bookingData.totalAmount === '') {
+            errors.push('❌ Total amount is required');
+        }
+
+        // 2. CHECK NUMERIC/DATE DATA (1 mark)
+        const userIdNum = parseInt(bookingData.userId);
+        const providerIdNum = parseInt(bookingData.providerId);
+        const guestsNum = parseInt(bookingData.numberOfGuests);
+        const amountNum = parseFloat(bookingData.totalAmount);
+
+        if (isNaN(userIdNum) || userIdNum <= 0) {
+            errors.push('❌ User ID must be a positive number');
+        }
+        if (isNaN(providerIdNum) || providerIdNum <= 0) {
+            errors.push('❌ Provider ID must be a positive number');
+        }
+        if (bookingData.numberOfGuests && (isNaN(guestsNum) || guestsNum < 1)) {
+            errors.push('❌ Number of guests must be at least 1');
+        }
+        if (isNaN(amountNum) || amountNum < 0) {
+            errors.push('❌ Total amount must be a valid positive number');
+        }
+
+        // Check date is valid and not in the past
+        if (bookingData.bookingDate) {
+            const selectedDate = new Date(bookingData.bookingDate);
+            const todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+
+            if (isNaN(selectedDate.getTime())) {
+                errors.push('❌ Please enter a valid date');
+            }
+            if (selectedDate < todayDate) {
+                errors.push('❌ Booking date cannot be in the past');
+            }
+        }
+
+        // 3. CHECK FIELD LENGTHS/RANGES (1 mark)
+        if (bookingData.numberOfGuests) {
+            if (guestsNum < 1 || guestsNum > 50) {
+                errors.push('❌ Number of guests must be between 1 and 50');
+            }
+        }
+
+        if (bookingData.specialRequests && bookingData.specialRequests.length > 500) {
+            errors.push('❌ Special requests cannot exceed 500 characters');
+        }
+
+        if (amountNum > 100000) {
+            errors.push('❌ Total amount cannot exceed R100,000');
+        }
+
+        // Display all errors if any
+        if (errors.length > 0) {
+            alert('⚠️ Please fix the following errors:\n\n' + errors.join('\n'));
+            return false;
+        }
+
+        return true;
+    }
+
+    // Handle form submission with validation
+    document.getElementById('addBookingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form values
+        const bookingData = {
+            userId: document.getElementById('userId').value.trim(),
+            providerId: document.getElementById('providerId').value.trim(),
+            bookingType: document.getElementById('bookingType').value,
+            bookingDate: document.getElementById('bookingDate').value,
+            timeSlot: document.getElementById('timeSlot').value,
+            numberOfGuests: document.getElementById('numberOfGuests').value,
+            totalAmount: document.getElementById('totalAmount').value,
+            eventId: document.getElementById('eventId').value,
+            specialRequests: document.getElementById('specialRequests').value.trim()
+        };
+
+        // RUN VALIDATION BEFORE SUBMITTING
+        if (!validateBookingForm(bookingData)) {
+            return; // Stop if validation fails
+        }
+
+        // Build booking object
+        const booking = {
+            user: {userId: parseInt(bookingData.userId)},
+            provider: {providerId: parseInt(bookingData.providerId)},
+            bookingType: bookingData.bookingType,
+            bookingDate: bookingData.bookingDate,
+            totalAmount: parseFloat(bookingData.totalAmount)
+        };
+
+        // Add optional fields if provided
+        if (bookingData.timeSlot) {
+            booking.timeSlot = bookingData.timeSlot + ':00';
+        }
+        if (bookingData.numberOfGuests) {
+            booking.numberOfGuests = parseInt(bookingData.numberOfGuests);
+        } else {
+            booking.numberOfGuests = 1;
+        }
+        if (bookingData.specialRequests) {
+            booking.specialRequests = bookingData.specialRequests;
+        }
+        if (bookingData.eventId) {
+            booking.event = {eventId: parseInt(bookingData.eventId)};
+        }
+
+        console.log('Sending booking:', booking);
+
+        const submitBtn = document.querySelector('#addBookingForm button');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(booking)
+            });
+
+            const responseText = await response.text();
+
+            if (response.ok) {
+                alert('✅ Booking created successfully!');
+                loadAll();
+                document.getElementById('addBookingForm').reset();
+                // Reset default values
+                document.getElementById('bookingDate').value = today;
+                document.getElementById('numberOfGuests').value = 1;
+            } else {
+                try {
+                    const errorData = JSON.parse(responseText);
+                    alert('❌ Error: ' + (errorData.message || responseText));
+                } catch {
+                    alert('❌ Error: ' + responseText);
+                }
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('❌ Network error: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+
+    // Load all bookings
+    async function loadAll() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error('Failed to load bookings');
+            }
+            allBookings = await response.json();
+            displayBookings(allBookings);
+        } catch (error) {
+            console.error('Error loading bookings:', error);
+            document.getElementById('bookingsTableBody').innerHTML =
+                '<tr><td colspan="11" style="text-align: center; padding: 20px; color: red;">Error loading bookings</td></tr>';
+        }
+    }
+
+    // Load bookings by status
+    async function loadByStatus(status) {
+        try {
+            const response = await fetch(API_URL + '/status/' + status);
+            const bookings = await response.json();
+            displayBookings(bookings);
+        } catch (error) {
+            console.error('Error loading bookings by status:', error);
+        }
+    }
+
+    // Display bookings in table
+    function displayBookings(bookings) {
+        const tbody = document.getElementById('bookingsTableBody');
+        tbody.innerHTML = '';
+
+        if (!bookings || bookings.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">No bookings found</td></tr>';
+            return;
+        }
+
+        bookings.forEach(booking => {
+            const row = tbody.insertRow();
+            const typeClass = `badge-${booking.bookingType}`;
+            const statusClass = `badge-${booking.status || 'PENDING'}`;
+
+            row.innerHTML = `
+                <td>${booking.bookingId || ''}</td>
+                <td>${booking.bookingReference || '-'}</td>
+                <td>${booking.user?.userId || ''}</td>
+                <td>${booking.provider?.providerId || ''}</td>
+                <td><span class="badge ${typeClass}">${booking.bookingType || ''}</span></td>
+                <td>${booking.bookingDate || ''}</td>
+                <td>${booking.timeSlot ? booking.timeSlot.substring(0,5) : '-'}</td>
+                <td>${booking.numberOfGuests || 1}</td>
+                <td>R${booking.totalAmount || 0}</td>
+                <td><span class="badge ${statusClass}">${booking.status || 'PENDING'}</span></td>
+                <td>
+                    ${booking.status === 'PENDING' ? `<button class="confirm-btn" onclick="confirmBooking(${booking.bookingId})">Confirm</button>` : ''}
+                    ${booking.status !== 'CANCELLED' ? `<button class="cancel-btn" onclick="cancelBooking(${booking.bookingId})">Cancel</button>` : ''}
+                    ${booking.status === 'CONFIRMED' && !booking.checkedIn ? `<button class="checkin-btn" onclick="checkinBooking(${booking.bookingId})">Check In</button>` : ''}
+                </td>
+            `;
+        });
+    }
+
+    // Search bookings
+    function searchBookings() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+        const type = document.getElementById('typeFilter').value;
+
+        let filtered = allBookings;
+
+        if (searchTerm) {
+            filtered = filtered.filter(b =>
+                (b.bookingReference && b.bookingReference.toLowerCase().includes(searchTerm)) ||
+                b.bookingId.toString().includes(searchTerm)
+            );
+        }
+
+        if (status) {
+            filtered = filtered.filter(b => b.status === status);
+        }
+
+        if (type) {
+            filtered = filtered.filter(b => b.bookingType === type);
+        }
+
+        displayBookings(filtered);
+    }
+
+    // Reset search
+    function resetSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('typeFilter').value = '';
+        displayBookings(allBookings);
+    }
+
+    // Filter by user
+    async function filterByUser() {
+        const userId = prompt('Enter User ID:');
+        if (userId) {
+            try {
+                const response = await fetch(API_URL + '/user/' + userId);
+                const bookings = await response.json();
+                displayBookings(bookings);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    }
+
+    // Filter by provider
+    async function filterByProvider() {
+        const providerId = prompt('Enter Provider ID:');
+        if (providerId) {
+            try {
+                const response = await fetch(API_URL + '/provider/' + providerId);
+                const bookings = await response.json();
+                displayBookings(bookings);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    }
+
+    // Confirm booking
+    async function confirmBooking(id) {
+        try {
+            const response = await fetch(`${API_URL}/${id}/confirm`, {method: 'PATCH'});
+            if (response.ok) {
+                alert('Booking confirmed');
+                loadAll();
+            } else {
+                const error = await response.text();
+                alert('Error: ' + error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // Cancel booking
+    async function cancelBooking(id) {
+        const reason = prompt('Reason for cancellation (optional):');
+        const url = reason ? `${API_URL}/${id}/cancel?reason=${encodeURIComponent(reason)}` : `${API_URL}/${id}/cancel`;
+        try {
+            const response = await fetch(url, {method: 'PATCH'});
+            if (response.ok) {
+                alert('Booking cancelled');
+                loadAll();
+            } else {
+                const error = await response.text();
+                alert('Error: ' + error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // Check in booking
+    async function checkinBooking(id) {
+        try {
+            const response = await fetch(`${API_URL}/${id}/checkin`, {method: 'PATCH'});
+            if (response.ok) {
+                alert('Check-in successful');
+                loadAll();
+            } else {
+                const error = await response.text();
+                alert('Error: ' + error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // Delete booking
+    async function deleteBooking(id) {
+        if (confirm('Are you sure you want to delete this booking?')) {
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {method: 'DELETE'});
+                if (response.ok) {
+                    alert('Booking deleted successfully');
+                    loadAll();
+                } else {
+                    const error = await response.text();
+                    alert('Error: ' + error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    }
+</script>
+</body>
+</html>

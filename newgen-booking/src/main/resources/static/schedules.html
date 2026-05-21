@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule Management - NewGen Booking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #0b4f6c;
+            font-size: 24px;
+        }
+        
+        .logo span {
+            color: #2c7da0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .home-btn {
+            background: #0b4f6c;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0b4f6c;
+        }
+        
+        .home-btn:hover {
+            background: #2c7da0;
+            border-color: #2c7da0;
+        }
+        
+        h1, h2, h3 {
+            color: #0b4f6c;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input,
+        .search-box select {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+        
+        .search-box input:focus,
+        .search-box select:focus {
+            outline: none;
+            border-color: #0b4f6c;
+            box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+        }
+        
+        .search-btn {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 30px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #0b4f6c;
+            border-color: #0b4f6c;
+        }
+        
+        .reset-btn {
+            background: white;
+            color: #0b4f6c;
+            padding: 12px 30px;
+            border: 2px solid #0b4f6c;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background: #e6f3ff;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            color: #0b4f6c;
+            padding: 8px 20px;
+            border: 2px solid #2c7da0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2c7da0;
+            color: white;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row input,
+        .form-row select {
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #0b4f6c;
+            box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+        }
+        
+        button {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 25px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0b4f6c;
+            border-color: #0b4f6c;
+        }
+        
+        .toggle-btn {
+            background: white;
+            color: #b85c00;
+            border: 2px solid #b85c00;
+        }
+        
+        .toggle-btn:hover {
+            background: #b85c00;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: white;
+            color: #d32f2f;
+            border: 2px solid #d32f2f;
+        }
+        
+        .delete-btn:hover {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        th {
+            background: #0b4f6c;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e6f3ff;
+        }
+        
+        tr:hover {
+            background-color: #f0f9ff;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-available {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+        
+        .badge-unavailable {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+        
+        .day-badge {
+            background: #e3f2fd;
+            color: #0b4f6c;
+            border: 1px solid #0b4f6c;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #0b4f6c;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #2c7da0;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input,
+            .search-box select {
+                width: 100%;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Home Button -->
+        <div class="header">
+            <div class="logo">
+                <h1>NewGen<span>Booking</span></h1>
+            </div>
+            <div class="nav-buttons">
+                <a href="/index.html" class="home-btn">Home</a>
+            </div>
+        </div>
+
+        <h1>SCHEDULE MANAGEMENT</h1>
+        <h3>Group Member: MPANYANE ST</h3>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2>Search Schedules</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by provider ID or business name...">
+                <select id="dayFilter">
+                    <option value="">All Days</option>
+                    <option value="0">Sunday</option>
+                    <option value="1">Monday</option>
+                    <option value="2">Tuesday</option>
+                    <option value="3">Wednesday</option>
+                    <option value="4">Thursday</option>
+                    <option value="5">Friday</option>
+                    <option value="6">Saturday</option>
+                </select>
+                <select id="availabilityFilter">
+                    <option value="">All</option>
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
+                </select>
+                <button class="search-btn" onclick="searchSchedules()">Search</button>
+                <button class="reset-btn" onclick="resetSearch()">Reset</button>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn" onclick="loadAll()">Show All</button>
+            </div>
+        </div>
+
+        <!-- Add Schedule Form - With Provider Dropdown -->
+        <div class="form-container">
+            <h2>Add New Schedule</h2>
+            <form id="addScheduleForm">
+                <div class="form-row">
+                    <select id="providerId" required>
+                        <option value="">Select Provider</option>
+                        <!-- Providers will be loaded here dynamically -->
+                    </select>
+                    <select id="dayOfWeek" required>
+                        <option value="">Select Day</option>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                    </select>
+                    <input type="time" id="startTime" placeholder="Start Time" required>
+                    <input type="time" id="endTime" placeholder="End Time" required>
+                </div>
+                <div class="form-row">
+                    <input type="time" id="breakStart" placeholder="Break Start (optional)">
+                    <input type="time" id="breakEnd" placeholder="Break End (optional)">
+                    <input type="number" id="maxBookingsPerSlot" value="1" min="1" placeholder="Max Bookings">
+                    <select id="isAvailable">
+                        <option value="true">Available</option>
+                        <option value="false">Unavailable</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <input type="date" id="effectiveFrom" placeholder="Effective From (optional)">
+                    <input type="date" id="effectiveTo" placeholder="Effective To (optional)">
+                </div>
+                <button type="submit">Add Schedule</button>
+            </form>
+        </div>
+
+        <!-- Schedules Table -->
+        <h2>Schedules List</h2>
+        <table id="schedulesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Provider</th>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Break</th>
+                    <th>Max Per Slot</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="schedulesTableBody">
+                <!-- Data will be loaded here -->
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>NewGen Booking System - Schedule Management Module</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/schedules';
+        const PROVIDERS_URL = 'http://localhost:8080/api/providers';
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let allSchedules = [];
+        let allProviders = [];
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAll();
+            loadProviders();
+        });
+
+        // Load all providers for dropdown
+        async function loadProviders() {
+            try {
+                const response = await fetch(PROVIDERS_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to load providers');
+                }
+                allProviders = await response.json();
+                populateProviderDropdown();
+            } catch (error) {
+                console.error('Error loading providers:', error);
+            }
+        }
+
+        // Populate provider dropdown
+        function populateProviderDropdown() {
+            const select = document.getElementById('providerId');
+
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+
+            // Add providers to dropdown
+            allProviders.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider.providerId;
+                option.textContent = `${provider.businessName} (ID: ${provider.providerId})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('addScheduleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form values
+            const providerId = document.getElementById('providerId').value;
+            const dayOfWeek = document.getElementById('dayOfWeek').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const breakStart = document.getElementById('breakStart').value;
+            const breakEnd = document.getElementById('breakEnd').value;
+            const maxBookingsPerSlot = document.getElementById('maxBookingsPerSlot').value;
+            const isAvailable = document.getElementById('isAvailable').value === 'true';
+            const effectiveFrom = document.getElementById('effectiveFrom').value;
+            const effectiveTo = document.getElementById('effectiveTo').value;
+
+            // Validate required fields
+            if (!providerId || !dayOfWeek || !startTime || !endTime) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Build schedule object
+            const schedule = {
+                provider: {providerId: parseInt(providerId)},
+                dayOfWeek: parseInt(dayOfWeek),
+                startTime: startTime + ':00',
+                endTime: endTime + ':00',
+                maxBookingsPerSlot: parseInt(maxBookingsPerSlot) || 1,
+                isAvailable: isAvailable
+            };
+
+            // Add optional fields if provided
+            if (breakStart && breakEnd) {
+                schedule.breakStart = breakStart + ':00';
+                schedule.breakEnd = breakEnd + ':00';
+            }
+
+            if (effectiveFrom) {
+                schedule.effectiveFrom = effectiveFrom;
+            }
+
+            if (effectiveTo) {
+                schedule.effectiveTo = effectiveTo;
+            }
+
+            console.log('Sending schedule:', schedule);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(schedule)
+                });
+
+                const responseText = await response.text();
+                console.log('Response status:', response.status);
+                console.log('Response text:', responseText);
+
+                if (response.ok) {
+                    alert('Schedule added successfully');
+                    loadAll();
+                    document.getElementById('addScheduleForm').reset();
+                } else {
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        alert('Error: ' + (errorData.message || responseText));
+                    } catch {
+                        alert('Error: ' + responseText);
+                    }
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert('Network error: ' + error.message);
+            }
+        });
+
+        // Load all schedules
+        async function loadAll() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to load schedules');
+                }
+                allSchedules = await response.json();
+                displaySchedules(allSchedules);
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+                document.getElementById('schedulesTableBody').innerHTML =
+                    '<tr><td colspan="9" style="text-align: center; padding: 20px; color: red;">Error loading schedules</td></tr>';
+            }
+        }
+
+        // Display schedules in table
+        function displaySchedules(schedules) {
+            const tbody = document.getElementById('schedulesTableBody');
+            tbody.innerHTML = '';
+
+            if (!schedules || schedules.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">No schedules found</td></tr>';
+                return;
+            }
+
+            schedules.forEach(schedule => {
+                const row = tbody.insertRow();
+                const dayName = dayNames[schedule.dayOfWeek] || 'Unknown';
+                const breakTime = schedule.breakStart && schedule.breakEnd ?
+                    `${schedule.breakStart.substring(0,5)}-${schedule.breakEnd.substring(0,5)}` : 'No break';
+                const statusClass = schedule.isAvailable ? 'badge-available' : 'badge-unavailable';
+                const statusText = schedule.isAvailable ? 'Available' : 'Unavailable';
+
+                // Find provider name
+                const provider = allProviders.find(p => p.providerId === schedule.provider?.providerId);
+                const providerDisplay = provider ? `${provider.businessName} (ID: ${schedule.provider?.providerId})` : `Provider ID: ${schedule.provider?.providerId || '-'}`;
+
+                row.innerHTML = `
+                    <td>${schedule.scheduleId || ''}</td>
+                    <td>${providerDisplay}</td>
+                    <td><span class="badge day-badge">${dayName}</span></td>
+                    <td>${schedule.startTime ? schedule.startTime.substring(0,5) : ''}</td>
+                    <td>${schedule.endTime ? schedule.endTime.substring(0,5) : ''}</td>
+                    <td>${breakTime}</td>
+                    <td>${schedule.maxBookingsPerSlot || 1}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="toggle-btn" onclick="toggleAvailability(${schedule.scheduleId})">Toggle</button>
+                        <button class="delete-btn" onclick="deleteSchedule(${schedule.scheduleId})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        // Search schedules
+        function searchSchedules() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const dayFilter = document.getElementById('dayFilter').value;
+            const availabilityFilter = document.getElementById('availabilityFilter').value;
+
+            let filtered = allSchedules;
+
+            if (searchTerm) {
+                filtered = filtered.filter(s => {
+                    // Search by provider ID
+                    const providerIdMatch = s.provider?.providerId?.toString().includes(searchTerm);
+
+                    // Search by provider name
+                    const provider = allProviders.find(p => p.providerId === s.provider?.providerId);
+                    const providerNameMatch = provider && provider.businessName.toLowerCase().includes(searchTerm);
+
+                    return providerIdMatch || providerNameMatch;
+                });
+            }
+
+            if (dayFilter !== '') {
+                filtered = filtered.filter(s => s.dayOfWeek === parseInt(dayFilter));
+            }
+
+            if (availabilityFilter !== '') {
+                const isAvailable = availabilityFilter === 'true';
+                filtered = filtered.filter(s => s.isAvailable === isAvailable);
+            }
+
+            displaySchedules(filtered);
+        }
+
+        // Reset search
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('dayFilter').value = '';
+            document.getElementById('availabilityFilter').value = '';
+            displaySchedules(allSchedules);
+        }
+
+        // Toggle availability
+        async function toggleAvailability(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}/toggle-availability`, {method: 'PATCH'});
+                if (response.ok) {
+                    alert('Availability toggled');
+                    loadAll();
+                } else {
+                    const error = await response.text();
+                    alert('Error: ' + error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Delete schedule
+        async function deleteSchedule(id) {
+            if (confirm('Are you sure you want to delete this schedule?')) {
+                try {
+                    const response = await fetch(`${API_URL}/${id}`, {method: 'DELETE'});
+                    if (response.ok) {
+                        alert('Schedule deleted successfully');
+                        loadAll();
+                    } else {
+                        const error = await response.text();
+                        alert('Error: ' + error);
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

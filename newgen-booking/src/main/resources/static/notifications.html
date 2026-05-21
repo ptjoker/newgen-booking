@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications - NewGen Booking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #0b4f6c;
+            font-size: 24px;
+        }
+        
+        .logo span {
+            color: #2c7da0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .home-btn {
+            background: #0b4f6c;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        h1, h2 {
+            color: #0b4f6c;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #e6f3ff;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+        
+        .notification-item:hover {
+            background-color: #f0f9ff;
+        }
+        
+        .notification-item.unread {
+            background-color: #e6f3ff;
+            border-left: 4px solid #2c7da0;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: #0b4f6c;
+            margin-bottom: 5px;
+        }
+        
+        .notification-message {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .notification-meta {
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-booking { background: #e3f2fd; color: #0b4f6c; }
+        .badge-payment { background: #e8f5e9; color: #2e7d32; }
+        .badge-reminder { background: #fff3e0; color: #b85c00; }
+        .badge-system { background: #f3e5f5; color: #7b1fa2; }
+        .badge-admin { background: #fce4ec; color: #c2185b; }
+        
+        .mark-read-btn {
+            background: #2c7da0;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        .mark-read-btn:hover {
+            background: #0b4f6c;
+        }
+        
+        .unread-count {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #0b4f6c;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #2c7da0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #2c7da0;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #dc3545;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <h1>NewGen<span>Booking</span></h1>
+            </div>
+            <div class="nav-buttons">
+                <a href="index.html" class="home-btn">Home</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h1>My Notifications</h1>
+            <p>Stay updated with your bookings, payments, and system announcements.</p>
+            
+            <div id="notificationsList">
+                <div class="loading">Loading notifications...</div>
+            </div>
+            
+            <button class="mark-read-btn" onclick="markAllAsRead()">Mark All as Read</button>
+        </div>
+        
+        <div class="footer">
+            <p>NewGen Booking System - Notifications Center</p>
+            <p>You receive notifications for booking confirmations, payment updates, and reminders.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/notifications';
+        let currentUserId = null;
+        let allNotifications = [];
+        
+        // Get logged in user ID from session storage
+        function getCurrentUserId() {
+            try {
+                const userStr = sessionStorage.getItem('loggedInUser');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    return user.id || user.userId;
+                }
+            } catch(e) {
+                console.error('Error getting user:', e);
+            }
+            // Default demo user ID - you can change this
+            return 1;
+        }
+        
+        async function loadNotifications() {
+            currentUserId = getCurrentUserId();
+            const container = document.getElementById('notificationsList');
+            
+            if (!currentUserId) {
+                container.innerHTML = '<div class="error"> Please login to see your notifications.</div>';
+                return;
+            }
+            
+            container.innerHTML = '<div class="loading">Loading notifications...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/user/${currentUserId}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                allNotifications = await response.json();
+                console.log('Notifications received:', allNotifications.length);
+                displayNotifications(allNotifications);
+                
+                // Load unread count
+                await loadUnreadCount();
+                
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                container.innerHTML = `<div class="error"> Error loading notifications: ${error.message}<br><br>Make sure you are logged in and backend is running.</div>`;
+            }
+        }
+        
+        async function loadUnreadCount() {
+            try {
+                const response = await fetch(`${API_URL}/user/${currentUserId}/unread-count`);
+                const count = await response.json();
+                console.log('Unread count:', count);
+                // You can update a badge in the header if needed
+            } catch(e) {
+                console.error('Error loading unread count:', e);
+            }
+        }
+        
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = '<div class="no-data"> No notifications yet</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            for (const notif of notifications) {
+                const notifDiv = document.createElement('div');
+                notifDiv.className = `notification-item ${notif.isRead ? '' : 'unread'}`;
+                notifDiv.onclick = () => markAsRead(notif.notifId);
+                
+                const typeClass = `badge-${notif.type || 'system'}`;
+                const notifDate = notif.createdAt ? new Date(notif.createdAt).toLocaleString() : '-';
+                const readStatus = notif.isRead ? 'Read' : 'Unread';
+                
+                notifDiv.innerHTML = `
+                    <div class="notification-title">
+                        <span class="badge ${typeClass}">${notif.type || 'system'}</span>
+                        ${notif.title || 'Notification'}
+                    </div>
+                    <div class="notification-message">${notif.message || 'No message'}</div>
+                    <div class="notification-meta">
+                        <span> ${notifDate}</span>
+                        <span> ${readStatus}</span>
+                        ${notif.referenceType ? `<span> ${notif.referenceType}: ${notif.referenceId || '-'}</span>` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(notifDiv);
+            }
+        }
+        
+        async function markAsRead(notifId) {
+            if (!notifId) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${notifId}/read`, { method: 'PATCH' });
+                if (response.ok) {
+                    console.log('Marked as read:', notifId);
+                    loadNotifications(); // Reload
+                }
+            } catch (error) {
+                console.error('Error marking as read:', error);
+            }
+        }
+        
+        async function markAllAsRead() {
+            if (!currentUserId) {
+                alert('Please login first');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/user/${currentUserId}/mark-all-read`, { 
+                    method: 'POST' 
+                });
+                if (response.ok) {
+                    console.log('All notifications marked as read');
+                    loadNotifications(); // Reload
+                }
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+                alert('Error marking all as read: ' + error.message);
+            }
+        }
+        
+        // Load on page load
+        loadNotifications();
+        
+        // Refresh every 30 seconds
+        setInterval(loadNotifications, 30000);
+    </script>
+</body>
+</html>

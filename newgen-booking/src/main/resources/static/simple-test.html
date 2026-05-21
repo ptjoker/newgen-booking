@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+</head>
+<body>
+    <h1>Provider Test</h1>
+    <div id="result"></div>
+    <button onclick="loadDoctors()">Load Doctors</button>
+    <button onclick="loadHotels()">Load Hotels</button>
+    <button onclick="loadTrips()">Load Trips</button>
+    <button onclick="loadEvents()">Load Events</button>
+    
+    <script>
+        async function loadDoctors() {
+            const res = await fetch('http://localhost:8080/api/providers/verified');
+            const data = await res.json();
+            const doctors = data.filter(p => p.service_type === 'DOCTOR');
+            document.getElementById('result').innerHTML = '<h3>Doctors:</h3><pre>' + JSON.stringify(doctors, null, 2) + '</pre>';
+        }
+        
+        async function loadHotels() {
+            const res = await fetch('http://localhost:8080/api/providers/verified');
+            const data = await res.json();
+            const hotels = data.filter(p => p.service_type === 'HOTEL');
+            document.getElementById('result').innerHTML = '<h3>Hotels:</h3><pre>' + JSON.stringify(hotels, null, 2) + '</pre>';
+        }
+        
+        async function loadTrips() {
+            const res = await fetch('http://localhost:8080/api/providers/verified');
+            const data = await res.json();
+            const trips = data.filter(p => p.service_type === 'TRIP');
+            document.getElementById('result').innerHTML = '<h3>Trips:</h3><pre>' + JSON.stringify(trips, null, 2) + '</pre>';
+        }
+        
+        async function loadEvents() {
+            const res = await fetch('http://localhost:8080/api/providers/verified');
+            const data = await res.json();
+            const events = data.filter(p => p.service_type === 'EVENT_ORGANIZER');
+            document.getElementById('result').innerHTML = '<h3>Events:</h3><pre>' + JSON.stringify(events, null, 2) + '</pre>';
+        }
+    </script>
+</body>
+</html>

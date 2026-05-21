@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Complaint - NewGen Booking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        h1 { color: #0b4f6c; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #0b4f6c; font-weight: 600; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        button {
+            background: #2c7da0;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-back {
+            background: #666;
+            margin-left: 10px;
+        }
+        .error { color: red; margin-top: 10px; display: none; }
+        .success { color: green; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit a Complaint / Feedback</h1>
+        <p>Please let us know about your issue. We will respond within 48 hours.</p>
+        
+        <div id="errorMsg" class="error"></div>
+        <div id="successMsg" class="success"></div>
+        
+        <form id="complaintForm">
+            <div class="form-group">
+                <label>Complaint Title</label>
+                <input type="text" id="title" placeholder="Brief summary of your issue" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Complaint Type</label>
+                <select id="type" required>
+                    <option value="SERVICE_ISSUE">Service Issue</option>
+                    <option value="BILLING_ISSUE">Billing Issue</option>
+                    <option value="TECHNICAL_ISSUE">Technical Issue</option>
+                    <option value="PROVIDER_COMPLAINT">Provider Complaint</option>
+                    <option value="BOOKING_ISSUE">Booking Issue</option>
+                    <option value="CANCELLATION_ISSUE">Cancellation Issue</option>
+                    <option value="REFUND_ISSUE">Refund Issue</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Provider ID (optional)</label>
+                <input type="number" id="providerId" placeholder="Enter provider ID if related to a specific provider">
+            </div>
+            
+            <div class="form-group">
+                <label>Booking ID (optional)</label>
+                <input type="number" id="bookingId" placeholder="Enter booking ID if related to a specific booking">
+            </div>
+            
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="description" rows="5" placeholder="Please provide detailed description of your issue" required></textarea>
+            </div>
+            
+            <button type="submit">Submit Complaint</button>
+            <button type="button" class="btn-back" onclick="window.location.href='/customer/dashboard.html'">Back to Dashboard</button>
+        </form>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/complaints';
+        
+        document.getElementById('complaintForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            const user = JSON.parse(loggedInUser);
+            
+            const complaint = {
+                user: { userId: user.id },
+                title: document.getElementById('title').value,
+                type: document.getElementById('type').value,
+                description: document.getElementById('description').value
+            };
+            
+            const providerId = document.getElementById('providerId').value;
+            if (providerId) {
+                complaint.provider = { providerId: parseInt(providerId) };
+            }
+            
+            const bookingId = document.getElementById('bookingId').value;
+            if (bookingId) {
+                complaint.booking = { bookingId: parseInt(bookingId) };
+            }
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(complaint)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('successMsg').textContent = 'Complaint submitted successfully! We will respond within 48 hours.';
+                    document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('complaintForm').reset();
+                    setTimeout(() => {
+                        window.location.href = '/customer/dashboard.html';
+                    }, 3000);
+                } else {
+                    const error = await response.text();
+                    document.getElementById('errorMsg').textContent = 'Error: ' + error;
+                    document.getElementById('errorMsg').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorMsg').textContent = 'Network error: ' + error.message;
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

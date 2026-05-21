@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pending Providers - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #0b4f6c;
+            font-size: 24px;
+        }
+        
+        .logo span {
+            color: #2c7da0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .home-btn, .logout-btn {
+            background: #0b4f6c;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0b4f6c;
+        }
+        
+        .home-btn:hover, .logout-btn:hover {
+            background: #2c7da0;
+            border-color: #2c7da0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #2c7da0;
+        }
+        
+        h1, h2 {
+            color: #0b4f6c;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #0b4f6c;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e6f3ff;
+        }
+        
+        tr:hover {
+            background-color: #f0f9ff;
+        }
+        
+        .approve-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        
+        .reject-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-pending {
+            background: #fff3e0;
+            color: #b85c00;
+            border: 1px solid #b85c00;
+        }
+        
+        .badge-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+        
+        .badge-rejected {
+            background: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #0b4f6c;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #2c7da0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <h1>NewGen<span>Booking</span></h1>
+            </div>
+            <div class="nav-buttons">
+                <a href="/admin/dashboard.html" class="home-btn">Dashboard</a>
+                <a href="/index.html" class="home-btn">Home</a>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h1>Pending Provider Approvals</h1>
+            <p>Review and approve provider registration requests below.</p>
+            
+            <div id="errorMessage" style="background:#ffebee; color:#d32f2f; padding:12px; border-radius:8px; display:none; margin-bottom:20px;"></div>
+            <div id="successMessage" style="background:#e8f5e9; color:#2e7d32; padding:12px; border-radius:8px; display:none; margin-bottom:20px;"></div>
+            
+            <table id="providersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="providersTableBody">
+                    <tr><td colspan="7" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>NewGen Booking System - Admin Approval Panel</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/users';
+        
+        function checkAdminLogin() {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) {
+                window.location.href = '/login.html';
+                return null;
+            }
+            const user = JSON.parse(loggedInUser);
+            if (user.role !== 'admin') {
+                window.location.href = '/index.html';
+                return null;
+            }
+            return user;
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('loggedInUser');
+            window.location.href = '/login.html';
+        }
+        
+        async function loadPendingProviders() {
+            try {
+                const response = await fetch(API_URL);
+                const users = await response.json();
+                
+                const pendingProviders = users.filter(u => 
+                    u.role === 'provider' && u.providerStatus === 'pending'
+                );
+                
+                const tbody = document.getElementById('providersTableBody');
+                
+                if (pendingProviders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No pending provider approvals</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                pendingProviders.forEach(provider => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${provider.userId}</td>
+                        <td>${provider.username}</td>
+                        <td>${provider.email}</td>
+                        <td>${provider.firstName} ${provider.lastName}</td>
+                        <td>${provider.phone || '-'}</td>
+                        <td><span class="badge badge-pending">Pending</span></td>
+                        <td>
+                            <button class="approve-btn" onclick="approveProvider(${provider.userId})">Approve</button>
+                            <button class="reject-btn" onclick="rejectProvider(${provider.userId})">Reject</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error loading providers:', error);
+                showError('Error loading data');
+            }
+        }
+        
+        async function approveProvider(userId) {
+            if (!confirm('Approve this provider? They will be able to add schedules.')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${userId}`);
+                const user = await response.json();
+                
+                user.providerStatus = 'approved';
+                
+                const updateResponse = await fetch(`${API_URL}/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(user)
+                });
+                
+                if (updateResponse.ok) {
+                    showSuccess('Provider approved successfully!');
+                    loadPendingProviders();
+                } else {
+                    showError('Error approving provider');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error approving provider');
+            }
+        }
+        
+        async function rejectProvider(userId) {
+            if (!confirm('Reject this provider? They will not be able to add schedules.')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${userId}`);
+                const user = await response.json();
+                
+                user.providerStatus = 'rejected';
+                
+                const updateResponse = await fetch(`${API_URL}/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(user)
+                });
+                
+                if (updateResponse.ok) {
+                    showSuccess('Provider rejected');
+                    loadPendingProviders();
+                } else {
+                    showError('Error rejecting provider');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error rejecting provider');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        checkAdminLogin();
+        loadPendingProviders();
+    </script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Dashboard - NewGen Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #0b4f6c, #2c7da0); padding: 15px 0; }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; }
+        .navbar-brand { color: white; font-size: 24px; font-weight: bold; }
+        .navbar-brand span { color: #ffd700; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; cursor: pointer; transition: 0.3s; }
+        .nav-links a:hover { color: #ffd700; }
+        .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .stat-card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number { font-size: 32px; font-weight: bold; color: #2c7da0; }
+        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .card-header { font-size: 18px; font-weight: bold; color: #0b4f6c; border-bottom: 2px solid #2c7da0; padding-bottom: 10px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #0b4f6c; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; }
+        .status-pending { background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        .status-confirmed { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        .status-cancelled { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        .status-completed { background: #d1ecf1; color: #0c5460; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        .btn-sm { padding: 4px 10px; border-radius: 15px; font-size: 11px; margin: 2px; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-confirm { background: #28a745; color: white; }
+        .btn-confirm:hover { background: #1e7e34; }
+        .btn-complete { background: #17a2b8; color: white; }
+        .btn-complete:hover { background: #138496; }
+        .btn-cancel { background: #dc3545; color: white; }
+        .btn-cancel:hover { background: #bd2130; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #bd2130; }
+        .btn-primary { background: #2c7da0; border: none; }
+        .btn-primary:hover { background: #0b4f6c; }
+        .welcome-banner { background: linear-gradient(135deg, #e8f4f8, #d4eaf1); border-radius: 15px; padding: 20px; margin-bottom: 25px; }
+        .verified-badge { background: #28a745; color: white; padding: 3px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        .pending-badge { background: #ffc107; color: #333; padding: 3px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        canvas { max-height: 300px; }
+        .schedule-item { background: #f8f9fa; border-radius: 10px; padding: 10px 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #2c7da0; }
+        .available { color: #28a745; font-weight: bold; }
+        .unavailable { color: #dc3545; font-weight: bold; }
+        .form-control { border: 2px solid #e0e0e0; border-radius: 8px; padding: 8px 12px; }
+        .form-control:focus { border-color: #2c7da0; outline: none; box-shadow: 0 0 0 3px rgba(44,125,160,0.1); }
+        @media (max-width: 768px) { .nav-links a { font-size: 12px; margin-left: 10px; } .stat-number { font-size: 24px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">NewGen<span>Booking</span></div>
+            <div class="nav-links">
+                <a onclick="showDashboard()">📊 Dashboard</a>
+                <a onclick="showSchedules()">📅 My Schedule</a>
+                <a onclick="showBookings()">📋 My Bookings</a>
+                <a onclick="showProfile()">👤 Profile</a>
+                <a onclick="logout()">🚪 Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="welcomeBanner" class="welcome-banner">
+            <h3 id="businessName">Loading...</h3>
+            <p id="businessInfo"></p>
+            <span id="statusBadge"></span>
+        </div>
+
+        <div id="dashboardSection">
+            <div class="row">
+                <div class="col-md-3"><div class="stat-card"><div class="stat-number" id="totalBookings">0</div><div>Total Bookings</div></div></div>
+                <div class="col-md-3"><div class="stat-card"><div class="stat-number" id="confirmedBookings">0</div><div>Confirmed</div></div></div>
+                <div class="col-md-3"><div class="stat-card"><div class="stat-number" id="totalRevenue">R0</div><div>Revenue</div></div></div>
+                <div class="col-md-3"><div class="stat-card"><div class="stat-number" id="totalCustomers">0</div><div>Customers</div></div></div>
+            </div>
+            <div class="card"><div class="card-header">📈 Bookings Per Month</div><canvas id="bookingsChart"></canvas></div>
+        </div>
+
+        <div id="schedulesSection" style="display:none;">
+            <div class="card">
+                <div class="card-header">➕ Add Availability Slot</div>
+                <div class="row">
+                    <div class="col-md-3 mb-2"><select id="dayOfWeek" class="form-control"><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option><option value="0">Sunday</option></select></div>
+                    <div class="col-md-3 mb-2"><input type="time" id="startTime" class="form-control" placeholder="Start Time"></div>
+                    <div class="col-md-3 mb-2"><input type="time" id="endTime" class="form-control" placeholder="End Time"></div>
+                    <div class="col-md-3 mb-2"><button class="btn btn-primary w-100" onclick="addSchedule()">Add Slot</button></div>
+                </div>
+            </div>
+            <div class="card"><div class="card-header">📅 My Schedule</div><div id="schedulesList">Loading...</div></div>
+        </div>
+
+        <div id="bookingsSection" style="display:none;">
+            <div class="card">
+                <div class="card-header">📋 My Bookings</div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Guests</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsListBody">
+                            <tr><td colspan="7" class="text-center">Loading...<\/td><\/tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="profileSection" style="display:none;">
+            <div class="card"><div class="card-header">👤 My Profile</div><div id="profileInfo"></div></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+        let currentProvider = null;
+        let currentUser = null;
+        let bookingsChart = null;
+        let allUsers = [];
+
+        async function init() {
+            const userData = sessionStorage.getItem('loggedInUser');
+            if (!userData) { window.location.href = '/login.html'; return; }
+            currentUser = JSON.parse(userData);
+            const userId = currentUser.userId || currentUser.id;
+            
+            const providers = await fetch(`${API_URL}/providers`).then(r => r.json());
+            currentProvider = providers.find(p => p.user?.userId === userId);
+            
+            if (!currentProvider) {
+                document.getElementById('welcomeBanner').innerHTML = '<div class="alert alert-danger">Provider profile not found. Please contact admin.</div>';
+                return;
+            }
+            
+            allUsers = await fetch(`${API_URL}/users`).then(r => r.json());
+            
+            document.getElementById('businessName').innerHTML = currentProvider.businessName;
+            document.getElementById('businessInfo').innerHTML = `${currentProvider.serviceType} | ${currentProvider.city || 'Location not set'}`;
+            document.getElementById('statusBadge').innerHTML = currentProvider.verified ? '<span class="verified-badge">✓ Verified Provider</span>' : '<span class="pending-badge">⏳ Pending Approval</span>';
+            
+            await loadDashboard();
+            await loadSchedules();
+            await loadBookings();
+            showDashboard();
+        }
+
+        function getCustomerName(userId) {
+            const user = allUsers.find(u => u.userId === userId);
+            return user ? `${user.firstName} ${user.lastName}` : `Customer ID: ${userId}`;
+        }
+
+        function filterBookingsByType(bookings) {
+            const serviceType = currentProvider.serviceType;
+            if (serviceType === 'DOCTOR') {
+                return bookings.filter(b => b.bookingType === 'APPOINTMENT');
+            } else if (serviceType === 'HOTEL') {
+                return bookings.filter(b => b.bookingType === 'HOTEL');
+            } else if (serviceType === 'TRIP') {
+                return bookings.filter(b => b.bookingType === 'TRIP');
+            } else if (serviceType === 'EVENT_ORGANIZER') {
+                return bookings.filter(b => b.bookingType === 'EVENT_TICKET');
+            }
+            return bookings;
+        }
+
+        async function loadDashboard() {
+            const bookings = await fetch(`${API_URL}/bookings?providerId=${currentProvider.providerId}`).then(r => r.json());
+            const filteredBookings = filterBookingsByType(bookings);
+            
+            const confirmed = filteredBookings.filter(b => b.status === 'CONFIRMED');
+            const revenue = filteredBookings.reduce((sum, b) => sum + (parseFloat(b.totalAmount) || 0), 0);
+            const customers = [...new Set(filteredBookings.map(b => b.userId))].length;
+            
+            document.getElementById('totalBookings').innerText = filteredBookings.length;
+            document.getElementById('confirmedBookings').innerText = confirmed.length;
+            document.getElementById('totalRevenue').innerText = `R${revenue.toFixed(2)}`;
+            document.getElementById('totalCustomers').innerText = customers;
+            
+            const monthlyData = {};
+            filteredBookings.forEach(b => {
+                if (b.bookingDate) {
+                    const month = new Date(b.bookingDate).toLocaleString('default', { month: 'short' });
+                    monthlyData[month] = (monthlyData[month] || 0) + 1;
+                }
+            });
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const counts = months.map(m => monthlyData[m] || 0);
+            
+            if (bookingsChart) bookingsChart.destroy();
+            const ctx = document.getElementById('bookingsChart').getContext('2d');
+            bookingsChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: months, datasets: [{ label: 'Bookings', data: counts, backgroundColor: '#2c7da0', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'Number of Bookings' } } } }
+            });
+        }
+
+        async function loadSchedules() {
+            try {
+                const schedules = await fetch(`${API_URL}/schedules/provider/${currentProvider.providerId}`).then(r => r.json());
+                const days = {0:'Sunday',1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday'};
+                const container = document.getElementById('schedulesList');
+                if (!schedules.length) { container.innerHTML = '<div class="alert alert-info">No schedules added yet. Add your availability above.</div>'; return; }
+                container.innerHTML = schedules.map(s => `
+                    <div class="schedule-item">
+                        <div><strong>${days[s.dayOfWeek]}</strong> | ${s.startTime} - ${s.endTime}</div>
+                        <div>
+                            <span class="${s.isAvailable ? 'available' : 'unavailable'}">${s.isAvailable ? '✓ Available' : '✗ Unavailable'}</span>
+                            <button class="btn-sm btn-warning" onclick="toggleSchedule(${s.scheduleId})">Toggle</button>
+                            <button class="btn-sm btn-danger" onclick="deleteSchedule(${s.scheduleId})">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function addSchedule() {
+            const data = {
+                provider: { providerId: currentProvider.providerId },
+                dayOfWeek: parseInt(document.getElementById('dayOfWeek').value),
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                isAvailable: true
+            };
+            if (!data.startTime || !data.endTime) { alert('Please enter start and end time'); return; }
+            try {
+                const res = await fetch(`${API_URL}/schedules`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (res.ok) { alert('Schedule added!'); loadSchedules(); }
+                else { const err = await res.text(); alert('Error: ' + err); }
+            } catch(e) { alert(e.message); }
+        }
+
+        async function toggleSchedule(id) {
+            try {
+                await fetch(`${API_URL}/schedules/${id}/toggle-availability`, { method: 'PATCH' });
+                loadSchedules();
+            } catch(e) { alert('Error toggling schedule'); }
+        }
+
+        async function deleteSchedule(id) {
+            if (!confirm('Delete this schedule?')) return;
+            try {
+                await fetch(`${API_URL}/schedules/${id}`, { method: 'DELETE' });
+                loadSchedules();
+            } catch(e) { alert('Error deleting schedule'); }
+        }
+
+        async function loadBookings() {
+            try {
+                const bookings = await fetch(`${API_URL}/bookings?providerId=${currentProvider.providerId}`).then(r => r.json());
+                const filteredBookings = filterBookingsByType(bookings);
+                const tbody = document.getElementById('bookingsListBody');
+                
+                if (filteredBookings.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center">No ${currentProvider.serviceType} bookings yet</td></tr>`;
+                    return;
+                }
+                
+                tbody.innerHTML = filteredBookings.map(b => {
+                    let customerName = 'Customer';
+                    if (b.user && b.user.firstName) {
+                        customerName = `${b.user.firstName} ${b.user.lastName}`;
+                    } else if (b.userId) {
+                        customerName = getCustomerName(b.userId);
+                    }
+                    
+                    return `
+                        <tr>
+                            <td>${customerName}</td>
+                            <td>${b.bookingDate}</td>
+                            <td>${b.bookingType}</td>
+                            <td>${b.numberOfGuests || 1}</td>
+                            <td>R${b.totalAmount}</td>
+                            <td><span class="status-${b.status?.toLowerCase()}">${b.status}</span></td>
+                            <td>
+                                ${b.status === 'PENDING' ? `<button class="btn-sm btn-confirm" onclick="updateStatus(${b.bookingId}, 'CONFIRMED')">Confirm</button>` : ''}
+                                ${b.status === 'CONFIRMED' ? `<button class="btn-sm btn-complete" onclick="updateStatus(${b.bookingId}, 'COMPLETED')">Complete</button>` : ''}
+                                <button class="btn-sm btn-cancel" onclick="updateStatus(${b.bookingId}, 'CANCELLED')">Cancel</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch(e) { console.error('Error loading bookings:', e); }
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                await fetch(`${API_URL}/bookings/${id}/cancel?reason=Updated by provider`, { method: 'PATCH' });
+                alert(`Booking ${status.toLowerCase()}`);
+                loadBookings();
+                loadDashboard();
+            } catch(e) { alert('Error updating status'); }
+        }
+
+        async function loadProfile() {
+            document.getElementById('profileInfo').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-store"></i> Business:</strong> ${currentProvider.businessName}</p>
+                        <p><strong><i class="fas fa-tag"></i> Service Type:</strong> ${currentProvider.serviceType}</p>
+                        <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> ${currentProvider.address || 'N/A'}</p>
+                        <p><strong><i class="fas fa-city"></i> City:</strong> ${currentProvider.city || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-phone"></i> Phone:</strong> ${currentProvider.phone}</p>
+                        <p><strong><i class="fas fa-envelope"></i> Email:</strong> ${currentUser.email}</p>
+                        <p><strong><i class="fas fa-check-circle"></i> Status:</strong> ${currentProvider.verified ? '✅ Verified' : '⏳ Pending'}</p>
+                        <p><strong><i class="fas fa-calendar-alt"></i> Joined:</strong> ${new Date(currentUser.createdAt).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showDashboard() {
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('schedulesSection').style.display = 'none';
+            document.getElementById('bookingsSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            loadDashboard();
+        }
+        
+        function showSchedules() {
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('schedulesSection').style.display = 'block';
+            document.getElementById('bookingsSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            loadSchedules();
+        }
+        
+        function showBookings() {
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('schedulesSection').style.display = 'none';
+            document.getElementById('bookingsSection').style.display = 'block';
+            document.getElementById('profileSection').style.display = 'none';
+            loadBookings();
+        }
+        
+        function showProfile() {
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('schedulesSection').style.display = 'none';
+            document.getElementById('bookingsSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'block';
+            loadProfile();
+        }
+        
+        function logout() { sessionStorage.clear(); window.location.href = '/login.html'; }
+        
+        init();
+    </script>
+</body>
+</html>

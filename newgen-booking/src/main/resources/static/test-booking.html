@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Booking</title>
+</head>
+<body>
+    <h1>Test Booking API</h1>
+    <button onclick="testBooking()">Test Booking</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testBooking() {
+            const user = sessionStorage.getItem('loggedInUser');
+            const userId = user ? JSON.parse(user).userId : 9;
+            
+            const bookingData = {
+                user: { userId: userId },
+                provider: { providerId: 1 },
+                bookingType: "APPOINTMENT",
+                bookingDate: "2026-05-10",
+                numberOfGuests: 1,
+                totalAmount: 500,
+                status: "PENDING"
+            };
+            
+            document.getElementById('result').innerHTML = 'Sending: ' + JSON.stringify(bookingData, null, 2) + '\n\n';
+            
+            try {
+                const res = await fetch('http://localhost:8080/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                const text = await res.text();
+                document.getElementById('result').innerHTML += 'Status: ' + res.status + '\n\nResponse: ' + text;
+            } catch(e) {
+                document.getElementById('result').innerHTML += 'Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

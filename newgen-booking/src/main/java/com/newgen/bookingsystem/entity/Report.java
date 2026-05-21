@@ -1,0 +1,106 @@
+package com.newgen.bookingsystem.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "reports")
+public class Report {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "report_id")
+    private Integer reportId;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private User admin;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "report_type", nullable = false)
+    private ReportType reportType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "report_format")
+    private ReportFormat reportFormat = ReportFormat.pdf;
+
+    @Column(name = "generated_date")
+    private LocalDateTime generatedDate;
+
+    @Column(name = "date_range_start")
+    private LocalDate dateRangeStart;
+
+    @Column(name = "date_range_end")
+    private LocalDate dateRangeEnd;
+
+    @Column(columnDefinition = "JSON")
+    private String filters;
+
+    @Column(name = "file_path", length = 255)
+    private String filePath;
+
+    @Column(name = "file_size")
+    private Integer fileSize;
+
+    @Enumerated(EnumType.STRING)
+    private ReportStatus status = ReportStatus.completed;
+
+    @Column(name = "download_count")
+    private Integer downloadCount = 0;
+
+    // ADDED 'complaints' to this enum
+    public enum ReportType {
+        bookings, payments, users, providers, revenue, commission, complaints
+    }
+
+    public enum ReportFormat {
+        pdf, excel, csv
+    }
+
+    public enum ReportStatus {
+        generating, completed, failed
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        generatedDate = LocalDateTime.now();
+    }
+
+    // Getters and Setters
+    public Integer getReportId() { return reportId; }
+    public void setReportId(Integer reportId) { this.reportId = reportId; }
+
+    public User getAdmin() { return admin; }
+    public void setAdmin(User admin) { this.admin = admin; }
+
+    public ReportType getReportType() { return reportType; }
+    public void setReportType(ReportType reportType) { this.reportType = reportType; }
+
+    public ReportFormat getReportFormat() { return reportFormat; }
+    public void setReportFormat(ReportFormat reportFormat) { this.reportFormat = reportFormat; }
+
+    public LocalDateTime getGeneratedDate() { return generatedDate; }
+    public void setGeneratedDate(LocalDateTime generatedDate) { this.generatedDate = generatedDate; }
+
+    public LocalDate getDateRangeStart() { return dateRangeStart; }
+    public void setDateRangeStart(LocalDate dateRangeStart) { this.dateRangeStart = dateRangeStart; }
+
+    public LocalDate getDateRangeEnd() { return dateRangeEnd; }
+    public void setDateRangeEnd(LocalDate dateRangeEnd) { this.dateRangeEnd = dateRangeEnd; }
+
+    public String getFilters() { return filters; }
+    public void setFilters(String filters) { this.filters = filters; }
+
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
+
+    public Integer getFileSize() { return fileSize; }
+    public void setFileSize(Integer fileSize) { this.fileSize = fileSize; }
+
+    public ReportStatus getStatus() { return status; }
+    public void setStatus(ReportStatus status) { this.status = status; }
+
+    public Integer getDownloadCount() { return downloadCount; }
+    public void setDownloadCount(Integer downloadCount) { this.downloadCount = downloadCount; }
+}
