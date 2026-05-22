@@ -26,7 +26,7 @@
             document.getElementById('result').innerHTML = 'Sending: ' + JSON.stringify(bookingData, null, 2) + '\n\n';
             
             try {
-                const res = await fetch('http://localhost:8080/api/bookings', {
+                const res = await fetch('https://newgen-booking-production.up.railway.app/api/bookings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(bookingData)
