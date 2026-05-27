@@ -74,6 +74,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
 
+        
         User user = userOpt.get();
 
         if (!user.getPassword().equals(password)) {

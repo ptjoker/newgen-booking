@@ -115,7 +115,9 @@ public class ProviderController {
 
             provider.setVerified(false);
             provider.setUser(user.get());
-
+            user.get().setProviderStatus("pending");
+            userRepository.save(user.get());
+            
             if (provider.getServiceType() == null) {
                 System.out.println("ERROR: Service type is missing");
                 return ResponseEntity.badRequest().body("Service type is required");
