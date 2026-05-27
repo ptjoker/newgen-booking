@@ -1,6 +1,6 @@
-This logo was generated using the following font:
+This favicon was generated using the following font:
 
-- Font Title: Arvo
+- Font Title: Leckerli One
 - Font Author: undefined
-- Font Source: https://fonts.gstatic.com/s/arvo/v23/tDbD2oWUg0MKmSAa7Lzr7vs.ttf
+- Font Source: https://fonts.gstatic.com/s/leckerlione/v21/V8mCoQH8VCsNttEnxnGQ-1itLZxcBtItFw.ttf
 - Font License: undefined)
