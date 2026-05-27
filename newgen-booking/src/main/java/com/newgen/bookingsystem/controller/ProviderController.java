@@ -210,6 +210,16 @@ public class ProviderController {
         provider.setVerificationDate(LocalDateTime.now());
         provider.setVerifiedBy(adminOpt.get());
 
+        // ALSO update the linked user status
+        User providerUser = provider.getUser();
+
+        if (providerUser != null) {
+            providerUser.setProviderStatus("verified");
+            userRepository.save(providerUser);
+
+            System.out.println("SUCCESS: User providerStatus updated to verified");
+        }
+
         Provider verifiedProvider = providerRepository.save(provider);
         System.out.println("SUCCESS: Provider verified: " + verifiedProvider.getBusinessName());
 
