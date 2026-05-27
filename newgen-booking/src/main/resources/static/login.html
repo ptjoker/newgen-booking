@@ -334,7 +334,11 @@
         loadingSpinner.style.display = 'block';
 
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(`${API_URL}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+});
             const users = await response.json();
 
             const user = users.find(u => u.email === email);
@@ -364,7 +368,7 @@
                 return;
             }
 
-            if (user.role.toUpperCase() === 'PROVIDER' && user.providerStatus !== 'approved') {
+            if (user.role.toUpperCase() === 'PROVIDER' && user.providerStatus !== 'verified') {
                 showError('Your provider account is pending admin approval. Please wait for verification.');
                 loginBtn.disabled = false;
                 loadingSpinner.style.display = 'none';
