@@ -39,6 +39,6 @@
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| Admin | `seleloserumula@gmail.com` | `hash789` |
+| Admin | `seleloserumula@gmail.com[id 5]` | `admin123` |
 | Customer | `thabo.k@email.com` | `hash123` |
 | Provider | `reservations@cityhotel.com` | `hash789` |
