@@ -28,7 +28,7 @@
 
 - **Backend:** Java 17, Spring Boot 4.0.3, Spring Data JPA
 - **Frontend:** HTML5, CSS3, JavaScript, Charts.js
-- **Database:** MySQL (Neon Tech)
+- **Database:** MySQL
 - **Deployment:** Railway
 
 ## 🚀 Live Demo
